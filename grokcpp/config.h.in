@@ -1,0 +1,6 @@
+#ifndef GROKCPP_CONFIG_H
+#define GROKCPP_CONFIG_H
+
+#define GROKCPP_DEBUG @GROKCPP_DEBUG@
+
+#endif
