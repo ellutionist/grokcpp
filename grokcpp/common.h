@@ -1,6 +1,8 @@
 #ifndef GROKCPP_COMMON_H
 #define GROKCPP_COMMON_H
 
+#include <cstddef>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -90,8 +92,25 @@ inline std::string gen_random(const int len) {
   return tmp_s;
 }
 
+inline string_vector list_dir(const std::string &dir_path) {
+  namespace fs = std::filesystem;
+  string_vector file_paths;
+  for (const auto &file : fs::directory_iterator(dir_path)) {
+    file_paths.emplace_back(file.path());
+  }
+
+  return file_paths;
+}
+
+#if defined(unix) || defined(__unix__) || defined(__unix)
+#define DIR_SEPARATOR "/"
+#else
+#define DIR_SEPARATOR "\\"
+#endif
+
 #define __FILENAME__                                                           \
-  (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+  (strrchr(__FILE__, DIR_SEPARATOR) ? strrchr(__FILE__, DIR_SEPARATOR) + 1     \
+                                    : __FILE__)
 
 #if GROKCPP_DEBUG == 1
 #define GROK_DEBUG_LOGF(fmt, ...)                                              \

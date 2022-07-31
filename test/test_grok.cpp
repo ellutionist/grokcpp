@@ -2,8 +2,11 @@
 #include "grok.h"
 #include "gtest/gtest.h"
 #include <cstdio>
+#include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <ostream>
+#include <vector>
 
 TEST(GROK, REGISTER_BASE) {
   grok::Grok::reset_register();
@@ -89,7 +92,7 @@ TEST(GROK, REGISTER_FILE) {
 
   grok::Grok::register_patterns_from_file(tmp_path);
 
-  grok::Grok g {"name: %{LOWERS:myname}, age: %{NUMBERS:myage}"};
+  grok::Grok g{"name: %{LOWERS:myname}, age: %{NUMBERS:myage}"};
   grok::GrokMatch match;
 
   g.match("name: mike, age: 15", match);
@@ -97,6 +100,62 @@ TEST(GROK, REGISTER_FILE) {
   EXPECT_EQ(match["myage"], "15");
 
   std::remove(tmp_path.c_str());
+}
+
+TEST(GROK, REGISTER_DIR) {
+  grok::Grok::reset_register();
+
+  namespace fs = std::filesystem;
+  auto tmp_dir = fs::temp_directory_path();
+  tmp_dir = tmp_dir / fs::path(grok::string_format(
+                          "tmp_groks_%s", grok::gen_random(8).c_str()));
+  //std::cout << tmp_dir << std::endl;
+  fs::create_directory(tmp_dir);
+
+  std::vector<fs::path> tmp_file_paths;
+  {
+    auto tmp_name = fs::path(grok::gen_random(12));
+    auto tmp_path = tmp_dir / tmp_name;
+    // std::cout << tmp_path;
+    std::ofstream os;
+    os.open(tmp_path);
+    os << "NUMBERS [0-9]+"
+       << "\n";
+    os << "CAPS [A-Z]+"
+       << "\n";
+    os.close();
+
+    tmp_file_paths.emplace_back(tmp_path);
+  }
+
+  {
+    auto tmp_name = fs::path(grok::gen_random(12));
+    auto tmp_path = tmp_dir / tmp_name;
+    std::ofstream os;
+    os.open(tmp_path);
+    os << "LOWERS [a-z]+"
+       << "\n";
+    os.close();
+
+    tmp_file_paths.emplace_back(tmp_path);
+  }
+
+  grok::Grok::register_patterns_from_dir(tmp_dir);
+
+  grok::Grok g{
+      "name: %{LOWERS:name}, country: %{CAPS:country}, age: %{NUMBERS:age}"};
+  grok::GrokMatch match;
+
+  g.match("name: dustin, country: USA, age: 17", match);
+
+  EXPECT_EQ(match["name"], "dustin");
+  EXPECT_EQ(match["country"], "USA");
+  EXPECT_EQ(match["age"], "17");
+
+  for (const auto &path : grok::list_dir(tmp_dir)) {
+    fs::remove(path);
+  }
+  fs::remove(tmp_dir);
 }
 
 TEST(GROK, MATCH_BASE) {

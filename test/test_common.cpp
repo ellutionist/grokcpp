@@ -34,11 +34,13 @@ TEST(COMMON, SPLIT) {
 }
 
 TEST(COMMON, READ_FILE) {
-  std::string full_tmp_path =
-      grok::string_format("/tmp/%s", grok::gen_random(12).c_str());
+  namespace fs = std::filesystem;
+  auto tmp_dir = fs::temp_directory_path();
+  auto tmp_file_name = fs::path(grok::gen_random(12));
+  auto tmp_file_path = tmp_dir / tmp_file_name;
 
   std::ofstream tmp_file_out;
-  tmp_file_out.open(full_tmp_path);
+  tmp_file_out.open(tmp_file_path);
   std::stringstream ss;
 
   for (int i = 0; i < 128; ++i) {
@@ -50,9 +52,9 @@ TEST(COMMON, READ_FILE) {
 
   tmp_file_out.close();
 
-  auto read_text = grok::read_file(full_tmp_path);
+  auto read_text = grok::read_file(tmp_file_path);
 
-  std::remove(full_tmp_path.c_str());
+  fs::remove(tmp_file_path);
 
   EXPECT_EQ(ss.str(), read_text);
 }

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(grokcpp)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
   # add_compile_options(-fno-elide-constructors)

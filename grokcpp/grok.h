@@ -29,6 +29,7 @@ public:
   static void register_patterns(const string_pair_vector &);
   static int register_patterns_from_text(const std::string &text);
   static int register_patterns_from_file(const std::string &file_path);
+  static int register_patterns_from_dir(const std::string &dir_path);
   static void reset_register() { register_groks_.clear(); }
 
 private:

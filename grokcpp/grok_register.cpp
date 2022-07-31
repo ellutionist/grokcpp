@@ -1,9 +1,10 @@
-
 #include "common.h"
 #include "grok.h"
+#include <algorithm>
 #include <exception>
 #include <sstream>
 #include <stdexcept>
+#include <sys/dirent.h>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -172,6 +173,17 @@ int Grok::register_patterns_from_file(const std::string &file_path) {
   std::string text = read_file(file_path);
 
   return register_patterns_from_text(text);
+}
+
+int Grok::register_patterns_from_dir(const std::string &dir_path) {
+  auto file_paths = list_dir(dir_path);
+
+  std::for_each(file_paths.begin(), file_paths.end(),
+                [](const std::string &file_path) {
+                  register_patterns_from_file(file_path);
+                });
+
+  return 0;
 }
 
 //}
