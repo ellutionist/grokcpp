@@ -1,5 +1,8 @@
+#include "common.h"
 #include "grok.h"
 #include "gtest/gtest.h"
+#include <cstdio>
+#include <fstream>
 #include <ostream>
 
 TEST(GROK, REGISTER_BASE) {
@@ -16,6 +19,48 @@ TEST(GROK, REGISTER_BASE) {
   grok::Grok g{"%{WORD}____%{NUMBERS}===%{WORD_NUMBERS_REPEAT:some_part}"};
 };
 
+TEST(GROK, REGISTER_FORCE) {
+  grok::Grok::reset_register();
+  {
+    grok::Grok g{"[A-Z]+"};
+    g.register_self_force("CAPS");
+  }
+
+  {
+    grok::Grok g{"%{CAPS:word}"};
+    grok::GrokMatch match;
+    g.match("abc, ABC", match);
+
+    EXPECT_EQ(match["word"], "ABC");
+  }
+
+  {
+    grok::Grok g{"[a-z]+"};
+    g.register_self("CAPS");
+  }
+
+  {
+    grok::Grok g{"%{CAPS:word}"};
+    grok::GrokMatch match;
+    g.match("abc, ABC", match);
+
+    EXPECT_NE(match["word"], "abc");
+  }
+
+  {
+    grok::Grok g{"[a-z]+"};
+    g.register_self_force("CAPS");
+  }
+
+  {
+    grok::Grok g{"%{CAPS:word}"};
+    grok::GrokMatch match;
+    g.match("abc, ABC", match);
+
+    EXPECT_EQ(match["word"], "abc");
+  }
+}
+
 TEST(GROK, REGISTER_FAIL) {
   grok::Grok::reset_register();
   grok::string_pair_vector vec{
@@ -28,6 +73,31 @@ TEST(GROK, REGISTER_FAIL) {
 
   EXPECT_THROW(grok::Grok::register_patterns(vec);, std::runtime_error);
 };
+
+TEST(GROK, REGISTER_FILE) {
+  grok::Grok::reset_register();
+
+  std::string tmp_path =
+      grok::string_format("/tmp/%s", grok::gen_random(12).c_str());
+  {
+    std::ofstream tmp_output;
+    tmp_output.open(tmp_path);
+    tmp_output << "NUMBERS [0-9]+" << '\n';
+    tmp_output << "LOWERS [a-z]+" << '\n';
+    tmp_output.close();
+  }
+
+  grok::Grok::register_patterns_from_file(tmp_path);
+
+  grok::Grok g {"name: %{LOWERS:myname}, age: %{NUMBERS:myage}"};
+  grok::GrokMatch match;
+
+  g.match("name: mike, age: 15", match);
+  EXPECT_EQ(match["myname"], "mike");
+  EXPECT_EQ(match["myage"], "15");
+
+  std::remove(tmp_path.c_str());
+}
 
 TEST(GROK, MATCH_BASE) {
   grok::Grok::reset_register();
@@ -68,10 +138,3 @@ TEST(GROK, MATCH_BASE) {
     EXPECT_EQ(match["unknown"], "");
   }
 }
-
-//TEST(GROK, PREDEFINE) {
-    //std::string pre (predefined_patterns_text);
-
-    //ASSERT_GT(pre.size(), 0);
-    //SUCCEED() << "predefined_patterns_text length: " << pre.size() << std::endl;
-//}

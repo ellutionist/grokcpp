@@ -1,7 +1,9 @@
 #ifndef GROKCPP_COMMON_H
 #define GROKCPP_COMMON_H
 
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -62,13 +64,39 @@ inline std::vector<std::string> split(const std::string &s,
   return res;
 }
 
+inline std::string read_file(const std::string &file_path) {
+  std::ifstream the_file(file_path);
+  std::stringstream buffer;
+  buffer << the_file.rdbuf();
+
+  the_file.close();
+
+  return buffer.str();
+}
+
+inline std::string gen_random(const int len) {
+  static std::once_flag random_seed_once;
+  static const char alphanum[] = "0123456789"
+                                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                 "abcdefghijklmnopqrstuvwxyz";
+  std::string tmp_s;
+  tmp_s.reserve(len);
+
+  std::call_once(random_seed_once, std::srand, time(NULL));
+  for (int i = 0; i < len; ++i) {
+    tmp_s += alphanum[std::rand() % (sizeof(alphanum) - 1)];
+  }
+
+  return tmp_s;
+}
+
 #define __FILENAME__                                                           \
   (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 #if GROKCPP_DEBUG == 1
 #define GROK_DEBUG_LOGF(fmt, ...)                                              \
   std::cout << grok::string_format(                                            \
-                   "%s:%d: %s", __FILENAME__, __LINE__,                       \
+                   "%s:%d: %s", __FILENAME__, __LINE__,                        \
                    grok::string_format(fmt, __VA_ARGS__).c_str())              \
             << std::endl;
 #else

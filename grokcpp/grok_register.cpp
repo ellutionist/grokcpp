@@ -1,4 +1,5 @@
 
+#include "common.h"
 #include "grok.h"
 #include <exception>
 #include <sstream>
@@ -124,7 +125,7 @@ void Grok::register_patterns(const string_pair_vector &pattern_expr_vec) {
       int unknown_count = Grok::check_unregister_groks(current->units, nullptr);
       if (!unknown_count) {
         GROK_DEBUG_LOGF("%s || %s", current->pattern.c_str(),
-                       current->expr.c_str());
+                        current->expr.c_str());
         Grok g{current->expr, current->units};
         g.register_self(current->pattern);
         ++progress_count;
@@ -165,6 +166,12 @@ int Grok::register_patterns_from_text(const std::string &text) {
   string_pair_vector pattern_expressions = preprocess_patterns_text(text);
   register_patterns(pattern_expressions);
   return 1;
+}
+
+int Grok::register_patterns_from_file(const std::string &file_path) {
+  std::string text = read_file(file_path);
+
+  return register_patterns_from_text(text);
 }
 
 //}

@@ -3,8 +3,8 @@
 
 #include "boost/regex.hpp"
 #include "common.h"
-#include "grok_unit.h"
 #include "grok_match.h"
+#include "grok_unit.h"
 #include <memory>
 #include <mutex>
 #include <unordered_map>
@@ -17,17 +17,24 @@ public:
   explicit Grok(const std::string &grok_expr);
 
   Grok(const Grok &) = default;
+  Grok(Grok &&) = default;
+
+  int match(const std::string &str, GrokMatch &match) const;
+
+  Grok &operator=(const Grok &) = default;
+
+public:
   void register_self(const std::string &name) const;
+  void register_self_force(const std::string &name) const;
   static void register_patterns(const string_pair_vector &);
   static int register_patterns_from_text(const std::string &text);
+  static int register_patterns_from_file(const std::string &file_path);
   static void reset_register() { register_groks_.clear(); }
-
-  int match(const std::string &str, GrokMatch& match) const;
 
 private:
   boost::regex regex_;
   // TODO: add unit test for capture_identifiers_
-  std::shared_ptr<string_vector> capture_identifiers_ { new string_vector() };
+  std::shared_ptr<string_vector> capture_identifiers_{new string_vector()};
   std::string raw_regex_expr_;
   std::string grok_expr_;
 

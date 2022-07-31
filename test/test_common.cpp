@@ -1,5 +1,12 @@
 #include "common.h"
 #include "gtest/gtest.h"
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <filesystem>
+#include <fstream>
+#include <mutex>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 
@@ -24,6 +31,30 @@ TEST(COMMON, SPLIT) {
 
   parts = grok::split("how are you", " ", 2);
   EXPECT_EQ(parts, decltype(parts)({"how", "are you"}));
+}
+
+TEST(COMMON, READ_FILE) {
+  std::string full_tmp_path =
+      grok::string_format("/tmp/%s", grok::gen_random(12).c_str());
+
+  std::ofstream tmp_file_out;
+  tmp_file_out.open(full_tmp_path);
+  std::stringstream ss;
+
+  for (int i = 0; i < 128; ++i) {
+    std::string random_string = grok::gen_random(1024);
+    ss << random_string << "\n";
+
+    tmp_file_out << random_string << "\n";
+  }
+
+  tmp_file_out.close();
+
+  auto read_text = grok::read_file(full_tmp_path);
+
+  std::remove(full_tmp_path.c_str());
+
+  EXPECT_EQ(ss.str(), read_text);
 }
 
 TEST(COMMON, FILE_NAME_MACRO) { EXPECT_EQ(__FILE_NAME__, "test_common.cpp"); }

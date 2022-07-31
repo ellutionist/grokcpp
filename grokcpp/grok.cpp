@@ -10,11 +10,12 @@ namespace grok {
 auto Grok::register_groks_ = std::unordered_map<std::string, Grok>();
 std::mutex Grok::register_lock_;
 
-static const char* predefined_patterns_text =
+static const char *predefined_patterns_text =
 #include "grok_patterns.txt"
-;
+    ;
 
-int Grok::__register_predefine_status = Grok::register_patterns_from_text(predefined_patterns_text);
+int Grok::__register_predefine_status =
+    Grok::register_patterns_from_text(predefined_patterns_text);
 
 Grok::Grok(const std::string &grok_expr)
     : grok_expr_(grok_expr), raw_regex_expr_(grok_expr) {
@@ -87,10 +88,24 @@ int Grok::check_unregister_groks(
 }
 
 void Grok::register_self(const std::string &name) const {
+  if (contains(register_groks_, name)) {
+    return;
+  }
   std::lock_guard<std::mutex> guard(register_lock_);
 
   register_groks_.insert({name, *this});
   // register_groks_[name] = *this;
+}
+
+void Grok::register_self_force(const std::string &name) const {
+  std::lock_guard<std::mutex> guard(register_lock_);
+
+  decltype(register_groks_)::iterator it = register_groks_.find(name);
+  if (it != register_groks_.end()) {
+    it->second = *this;
+  } else {
+    register_groks_.insert({name, *this});
+  }
 }
 
 int Grok::match(const std::string &str, GrokMatch &match) const {
