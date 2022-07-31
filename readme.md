@@ -60,3 +60,6 @@ if (g.match("my name in upper case: JOHN", match)) {
 }
 ```
 
+- You can also register pattern from:
+    - file, using function `grok::Grok::register_patterns_from_file(const std::string &file_name)`;
+    - directory, using function `grok::Grok::register_patterns_from_dir(const std::string &file_path)`;
