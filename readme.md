@@ -11,7 +11,7 @@ C++ implementation of [Grok Pattern](https://www.elastic.co/guide/en/logstash/cu
 - Boost.Regex
     - For now this library employs [Boost.Regex](https://www.boost.org/doc/libs/1_79_0/libs/regex/doc/html/index.html). Planing to support more regex libraries in the future.
 - Google Test
-    - Gropcpp use gtest for testing purposes. This dependency can be excluded by using cmake option `-DENABLE_TESTS=OFF`.
+    - Gropcpp use gtest for testing purposes. This dependency can be excluded by using cmake option `-DGROKCPP_BUILD_TESTS=OFF`.
 
 ### Build
 
