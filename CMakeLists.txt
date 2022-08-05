@@ -27,6 +27,7 @@ target_include_directories(grokcpp PUBLIC ${PROJECT_SOURCE_DIR}/grokcpp)
 target_include_directories(grokcpp PUBLIC ${PROJECT_BINARY_DIR}/grokcpp)
 target_include_directories(grokcpp PUBLIC ${Boost_INCLUDE_DIR})
 target_link_libraries(grokcpp PRIVATE ${Boost_LIBRARIES})
+target_compile_options(grokcpp PRIVATE -Wall)
 
 option(GROKCPP_BUILD_TESTS "Build tests for grokcpp" ON)
 if (${GROKCPP_BUILD_TESTS})

@@ -48,7 +48,7 @@ void Grok::init(const std::vector<GrokUnit> &units) {
       throw std::runtime_error(
           string_format("unknown grok pattern \"%s\"", pattern.c_str()));
     }
-    const Grok &pre_g = register_groks_.at(pattern);
+    const auto &pre_g = register_groks_.at(pattern);
 
     bool is_new_identifier = identifier.size() && !is_seen(identifier);
 
@@ -74,7 +74,7 @@ int Grok::check_unregister_groks(
     std::shared_ptr<std::vector<GrokUnit>> container) {
 
   int count = 0;
-  for (const GrokUnit &unit : to_check) {
+  for (const auto &unit : to_check) {
     const std::string &pattern = unit.pattern();
 
     if (!contains(register_groks_, pattern)) {
@@ -115,7 +115,7 @@ int Grok::match(const std::string &str, GrokMatch &match) const {
   if (re_success) {
     string_map values = std::unordered_map<std::string, std::string>();
 
-    for (const std::string &identifier : *capture_identifiers_) {
+    for (const auto &identifier : *capture_identifiers_) {
       std::string value = what[identifier];
       values.insert({identifier, value});
     }

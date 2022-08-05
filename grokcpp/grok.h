@@ -36,8 +36,8 @@ private:
   boost::regex regex_;
   // TODO: add unit test for capture_identifiers_
   std::shared_ptr<string_vector> capture_identifiers_{new string_vector()};
-  std::string raw_regex_expr_;
   std::string grok_expr_;
+  std::string raw_regex_expr_;
 
   Grok(const std::string &grok_expr, const std::vector<GrokUnit> &units);
 

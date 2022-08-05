@@ -1,6 +1,7 @@
 include_directories(${PROJECT_SOURCE_DIR}/grokcpp)
 link_libraries(grokcpp)
 
+find_package(Threads REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 
 file(GLOB test_files ${CMAKE_CURRENT_LIST_DIR}/ test_*cpp)
