@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <mutex>
 
 #include "config.h"
 
@@ -102,10 +103,10 @@ inline string_vector list_dir(const std::string &dir_path) {
   return file_paths;
 }
 
-#if defined(unix) || defined(__unix__) || defined(__unix)
-#define DIR_SEPARATOR "/"
+#if __APPLE__ || defined(unix) || defined(__unix__) || defined(__unix)
+#define DIR_SEPARATOR '/'
 #else
-#define DIR_SEPARATOR "\\"
+#define DIR_SEPARATOR '\\'
 #endif
 
 #define __FILENAME__                                                           \

@@ -59,4 +59,6 @@ TEST(COMMON, READ_FILE) {
   EXPECT_EQ(ss.str(), read_text);
 }
 
-TEST(COMMON, FILE_NAME_MACRO) { EXPECT_EQ(__FILE_NAME__, "test_common.cpp"); }
+TEST(COMMON, FILE_NAME_MACRO) {
+  EXPECT_EQ(std::string(__FILENAME__), std::string("test_common.cpp"));
+}
