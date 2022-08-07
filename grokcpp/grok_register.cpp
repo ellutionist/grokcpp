@@ -4,7 +4,6 @@
 #include <exception>
 #include <sstream>
 #include <stdexcept>
-#include <sys/dirent.h>
 #include <unordered_map>
 #include <utility>
 #include <vector>
