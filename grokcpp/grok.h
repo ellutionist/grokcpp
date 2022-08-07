@@ -53,5 +53,8 @@ private:
 
   static int __register_predefine_status;
 };
+
+inline std::unordered_map<std::string, Grok> Grok::register_groks_;
+
 } // namespace grok
 #endif

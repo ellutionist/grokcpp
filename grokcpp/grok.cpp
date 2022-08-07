@@ -7,7 +7,6 @@
 
 namespace grok {
 
-auto Grok::register_groks_ = std::unordered_map<std::string, Grok>();
 std::mutex Grok::register_lock_;
 
 static const char *predefined_patterns_text =
